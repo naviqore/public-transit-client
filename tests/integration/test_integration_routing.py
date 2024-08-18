@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from public_transit_client.client import PublicTransitClient
-from public_transit_client.model import TimeType, Connection, StopConnection
+from public_transit_client.model import Connection, StopConnection, TimeType
 
 HOST = "http://localhost:8080"
 
@@ -22,7 +22,7 @@ def test_get_connections(client):
         from_stop=from_stop,
         to_stop=to_stop,
         time=departure_time,
-        time_type=TimeType.DEPARTURE
+        time_type=TimeType.DEPARTURE,
     )
 
     assert isinstance(connections, list)
@@ -42,9 +42,11 @@ def test_get_isolines(client):
         time_type=TimeType.DEPARTURE,
         max_walking_duration=10,
         max_transfer_number=1,
-        return_connections=True
+        return_connections=True,
     )
 
     assert isinstance(isolines, list)
     assert len(isolines) > 0
-    assert all(isinstance(stop_connection, StopConnection) for stop_connection in isolines)
+    assert all(
+        isinstance(stop_connection, StopConnection) for stop_connection in isolines
+    )
