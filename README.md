@@ -1,4 +1,4 @@
-# Public Transit Service
+# Public Transit Client
 
 Client to access the [Public Transit Service](https://github.com/naviqore/public-transit-service) API endpoints.
 
