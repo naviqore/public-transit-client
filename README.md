@@ -37,7 +37,7 @@ clarity and separation of concerns.
 Unit tests are designed to test individual components in isolation. To run the unit tests, simply execute:
 
 ```sh
-pytest tests/unit
+poetry run pytest -m unit
 ```
 
 ## Running Integration Tests
@@ -58,7 +58,7 @@ docker compose up -d
 Once the services are up and running, execute the integration tests with:
 
 ```sh
-pytest tests/integration
+poetry run pytest -m integration
 ```
 
 ## License
