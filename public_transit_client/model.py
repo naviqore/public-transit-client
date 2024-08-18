@@ -63,8 +63,9 @@ class Trip(BaseModel):
     route: Route
     stopTimes: list[StopTime]
 
+    @staticmethod
     @field_validator("stopTimes", mode="before")
-    def set_stop_times_not_none(self, v: list[StopTime] | None) -> list[StopTime]:
+    def set_stop_times_not_none(v: list[StopTime] | None) -> list[StopTime]:
         return v or []
 
 
@@ -122,8 +123,9 @@ class Leg(BaseModel):
 class Connection(BaseModel):
     legs: list[Leg]
 
+    @staticmethod
     @field_validator("legs")
-    def legs_not_empty(self, v: list[Leg]) -> list[Leg]:
+    def legs_not_empty(v: list[Leg]) -> list[Leg]:
         if not v:
             raise ValueError("legs must not be empty")
         return v
