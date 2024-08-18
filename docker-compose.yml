@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  public-transit-service:
+    image: ghcr.io/naviqore/public-transit-service:latest
+    container_name: public-transit-service
+    ports:
+      - "8080:8080"
+    environment:
+      - GTFS_STATIC_URI=https://developers.google.com/static/transit/gtfs/examples/sample-feed.zip
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health | grep '\"status\":\"UP\"' || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
