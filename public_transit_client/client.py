@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import requests
 from requests import Response
@@ -78,7 +78,7 @@ class PublicTransitClient:
     def get_next_departures(self, stop: str | Stop, departure: datetime | None = None, limit: int = 10,
                             until: datetime | None = None) -> List[Departure]:
         stop_id = stop.id if isinstance(stop, Stop) else stop
-        params = {"limit": limit}
+        params = {"limit": str(limit)}
         if departure:
             params["departureDateTime"] = departure.strftime('%Y-%m-%dT%H:%M:%S')
         if until:
@@ -128,8 +128,8 @@ class PublicTransitClient:
     def _build_params_dict(from_stop: str | Stop, to_stop: str | Stop | None = None, time: datetime | None = None,
                            time_type: TimeType | None = None, max_walking_duration: int | None = None,
                            max_transfer_number: int | None = None, max_travel_time: int | None = None,
-                           min_transfer_time: int | None = None) -> dict:
-        params = {
+                           min_transfer_time: int | None = None) -> Dict[str, str]:
+        params: Dict[str, str] = {
             "sourceStopId": from_stop.id if isinstance(from_stop, Stop) else from_stop,
             "dateTime": (datetime.now() if time is None else time).strftime('%Y-%m-%dT%H:%M:%S')
         }
@@ -138,12 +138,12 @@ class PublicTransitClient:
         if time_type:
             params["timeType"] = time_type.value
         if max_walking_duration is not None:
-            params["maxWalkingDuration"] = max_walking_duration
+            params["maxWalkingDuration"] = str(max_walking_duration)
         if max_transfer_number is not None:
-            params["maxTransferNumber"] = max_transfer_number
+            params["maxTransferNumber"] = str(max_transfer_number)
         if max_travel_time is not None:
-            params["maxTravelTime"] = max_travel_time
+            params["maxTravelTime"] = str(max_travel_time)
         if min_transfer_time is not None:
-            params["minTransferTime"] = min_transfer_time
+            params["minTransferTime"] = str(min_transfer_time)
 
         return params
