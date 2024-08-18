@@ -28,8 +28,8 @@ def test_get_connections(client):
     assert isinstance(connections, list)
     assert len(connections) > 0
     assert all(isinstance(connection, Connection) for connection in connections)
-    assert connections[0].fromStop.id == from_stop
-    assert connections[0].toStop.id == to_stop
+    assert connections[0].from_stop.id == from_stop
+    assert connections[0].to_stop.id == to_stop
 
 
 @pytest.mark.integration
