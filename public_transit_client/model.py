@@ -23,6 +23,14 @@ class TimeType(Enum):
     ARRIVAL = "ARRIVAL"
 
 
+class APIError(BaseModel):
+    timestamp: datetime
+    status: int
+    error: str
+    path: str
+    message: str
+
+
 class Coordinate(BaseModel):
     latitude: float
     longitude: float
