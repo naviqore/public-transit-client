@@ -4,25 +4,18 @@ from unittest.mock import Mock, patch
 import pytest
 from requests import Response
 
-from public_transit_client.client import (
-    PublicTransitClient,
-    PublicTransitClientException,
-)
-from public_transit_client.model import (
-    Connection,
-    Coordinate,
-    Departure,
-    SearchType,
-    Stop,
-    StopConnection,
-)
+from public_transit_client.client import (PublicTransitClient,
+                                          PublicTransitClientException)
+from public_transit_client.model import (Connection, Coordinate, Departure,
+                                         SearchType, Stop, StopConnection)
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def client():
     return PublicTransitClient(host="http://fakehost")
 
 
+@pytest.mark.unit
 def mock_response(status=200, json_data=None):
     mock_resp = Mock(spec=Response)
     mock_resp.status_code = status
@@ -30,6 +23,7 @@ def mock_response(status=200, json_data=None):
     return mock_resp
 
 
+@pytest.mark.unit
 def test_send_get_request_success(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(status=200, json_data={"key": "value"})
@@ -40,6 +34,7 @@ def test_send_get_request_success(client):
         mock_get.assert_called_once_with("http://fakehost/fake_endpoint", params=None)
 
 
+@pytest.mark.unit
 def test_send_get_request_error(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(
@@ -63,6 +58,7 @@ def test_send_get_request_error(client):
         mock_get.assert_called_once_with("http://fakehost/fake_endpoint", params=None)
 
 
+@pytest.mark.unit
 def test_search_stops(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(
@@ -84,6 +80,7 @@ def test_search_stops(client):
         assert isinstance(stops[0], Stop)
 
 
+@pytest.mark.unit
 def test_nearest_stops(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(
@@ -111,6 +108,7 @@ def test_nearest_stops(client):
         assert isinstance(stops[0].stop, Stop)
 
 
+@pytest.mark.unit
 def test_get_stop(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(
@@ -129,6 +127,7 @@ def test_get_stop(client):
         assert isinstance(stop, Stop)
 
 
+@pytest.mark.unit
 def test_get_next_departures(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(
@@ -167,6 +166,7 @@ def test_get_next_departures(client):
         assert isinstance(departures[0], Departure)
 
 
+@pytest.mark.unit
 def test_get_connections(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(
@@ -195,6 +195,7 @@ def test_get_connections(client):
         assert isinstance(connections[0], Connection)
 
 
+@pytest.mark.unit
 def test_get_isolines(client):
     with patch("requests.get") as mock_get:
         mock_get.return_value = mock_response(

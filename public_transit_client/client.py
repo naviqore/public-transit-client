@@ -5,17 +5,9 @@ from typing import Dict, List, Optional
 import requests
 from requests import Response
 
-from public_transit_client.model import (
-    APIError,
-    Connection,
-    Coordinate,
-    Departure,
-    DistanceToStop,
-    SearchType,
-    Stop,
-    StopConnection,
-    TimeType,
-)
+from public_transit_client.model import (APIError, Connection, Coordinate,
+                                         Departure, DistanceToStop, SearchType,
+                                         Stop, StopConnection, TimeType)
 
 LOG = logging.getLogger(__name__)
 
