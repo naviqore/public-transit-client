@@ -2,8 +2,10 @@ from datetime import datetime
 
 import pytest
 
-from public_transit_client.client import PublicTransitClient
-from public_transit_client.model import Connection, StopConnection, TimeType
+from public_transit_client.client import (PublicTransitClient,
+                                          PublicTransitClientException)
+from public_transit_client.model import (Connection, Coordinate,
+                                         StopConnection, TimeType)
 
 HOST = "http://localhost:8080"
 
@@ -33,6 +35,46 @@ def test_get_connections(client):
 
 
 @pytest.mark.integration
+def test_get_connections_invalid_stop(client):
+    from_stop = "INVALID_STOP"
+    to_stop = "BULLFROG"
+    departure_time = datetime(2008, 6, 1)
+
+    with pytest.raises(PublicTransitClientException) as exc_info:
+        client.get_connections(
+            from_stop=from_stop,
+            to_stop=to_stop,
+            time=departure_time,
+            time_type=TimeType.DEPARTURE,
+        )
+
+    assert exc_info.value.api_error.status == 404
+    assert "'INVALID_STOP' was not found" in exc_info.value.api_error.message
+
+
+@pytest.mark.integration
+def test_get_connections_negative_walking_duration(client):
+    from_stop = "NANAA"
+    to_stop = "BULLFROG"
+    departure_time = datetime(2008, 6, 1)
+
+    with pytest.raises(PublicTransitClientException) as exc_info:
+        client.get_connections(
+            from_stop=from_stop,
+            to_stop=to_stop,
+            time=departure_time,
+            time_type=TimeType.DEPARTURE,
+            max_walking_duration=-10,
+        )
+
+    assert exc_info.value.api_error.status == 400
+    assert (
+            "Max walking duration must be greater than or equal to 0"
+            in exc_info.value.api_error.message
+    )
+
+
+@pytest.mark.integration
 def test_get_isolines(client):
     from_stop = "NANAA"
     departure_time = datetime(2008, 6, 1)
@@ -49,4 +91,37 @@ def test_get_isolines(client):
     assert len(isolines) > 0
     assert all(
         isinstance(stop_connection, StopConnection) for stop_connection in isolines
+    )
+
+
+@pytest.mark.integration
+def test_get_isolines_invalid_stop(client):
+    from_stop = "INVALID_STOP"
+    departure_time = datetime(2008, 6, 1)
+
+    with pytest.raises(PublicTransitClientException) as exc_info:
+        client.get_isolines(
+            from_stop=from_stop,
+            time=departure_time,
+            time_type=TimeType.DEPARTURE,
+            max_walking_duration=10,
+            max_transfer_number=1,
+            return_connections=True,
+        )
+
+    assert exc_info.value.api_error.status == 404
+    assert "'INVALID_STOP' was not found" in exc_info.value.api_error.message
+
+
+@pytest.mark.integration
+def test_nearest_stops_invalid_coordinate(client):
+    invalid_coordinate = Coordinate(latitude=999.0, longitude=999.0)
+
+    with pytest.raises(PublicTransitClientException) as exc_info:
+        client.nearest_stops(coordinate=invalid_coordinate, limit=5, max_distance=500)
+
+    assert exc_info.value.api_error.status == 400
+    assert (
+            "Latitude must be between -90 and 90 degrees"
+            in exc_info.value.api_error.message
     )
