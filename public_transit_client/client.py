@@ -248,14 +248,14 @@ class PublicTransitClient:
         }
 
         if start is isinstance(start, tuple):
-            params["sourceLatitude"] = str(start[0])
-            params["sourceLongitude"] = str(start[1])
+            params["sourceLatitude"] = str(start[0]) # type: ignore
+            params["sourceLongitude"] = str(start[1]) # type: ignore
         elif isinstance(start, str):
             params["sourceStopId"] = start
 
         if destination is isinstance(destination, tuple):
-            params["targetLatitude"] = str(destination[0])
-            params["targetLongitude"] = str(destination[1])
+            params["targetLatitude"] = str(destination[0]) # type: ignore
+            params["targetLongitude"] = str(destination[1]) # type: ignore
         elif isinstance(destination, str):
             params["targetStopId"] = destination
 
