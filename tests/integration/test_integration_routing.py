@@ -69,8 +69,8 @@ def test_get_connections_negative_walking_duration(client):
 
     assert exc_info.value.api_error.status == 400
     assert (
-            "Max walking duration must be greater than or equal to 0"
-            in exc_info.value.api_error.message
+        "Max walking duration must be greater than or equal to 0"
+        in exc_info.value.api_error.message
     )
 
 
@@ -122,6 +122,6 @@ def test_nearest_stops_invalid_coordinate(client):
 
     assert exc_info.value.api_error.status == 400
     assert (
-            "Latitude must be between -90 and 90 degrees"
-            in exc_info.value.api_error.message
+        "Latitude must be between -90 and 90 degrees"
+        in exc_info.value.api_error.message
     )

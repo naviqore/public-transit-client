@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, field_validator
 
 class SearchType(Enum):
     """Enum for specifying the type of search."""
+
     EXACT = "EXACT"
     CONTAINS = "CONTAINS"
     STARTS_WITH = "STARTS_WITH"
@@ -16,12 +17,14 @@ class SearchType(Enum):
 
 class LegType(Enum):
     """Enum for specifying the type of leg in a journey."""
+
     WALK = "WALK"
     ROUTE = "ROUTE"
 
 
 class TimeType(Enum):
     """Enum for specifying the type of time defined in a connection query (departure or arrival)."""
+
     DEPARTURE = "DEPARTURE"
     ARRIVAL = "ARRIVAL"
 
@@ -36,6 +39,7 @@ class APIError(BaseModel):
         path (str): The path where the error occurred.
         message (str): A detailed message about the error.
     """
+
     timestamp: datetime
     status: int
     error: str
@@ -50,6 +54,7 @@ class Coordinate(BaseModel):
         latitude (float): The latitude of the coordinate.
         longitude (float): The longitude of the coordinate.
     """
+
     latitude: float
     longitude: float
 
@@ -86,6 +91,7 @@ class Stop(BaseModel):
         name (str): The name of the stop.
         coordinate (Coordinate): The geographical coordinate of the stop.
     """
+
     id: str
     name: str
     coordinate: Coordinate = Field(alias="coordinates")
@@ -100,6 +106,7 @@ class Route(BaseModel):
         short_name (str): The short name of the route.
         transport_mode (str): The mode of transport (e.g., bus, train).
     """
+
     id: str
     name: str
     short_name: str = Field(alias="shortName")
@@ -113,7 +120,8 @@ class StopTime(BaseModel):
         stop (Stop): The stop associated with the stop time.
         arrival_time (datetime): The arrival time at the stop.
         departure_time (datetime): The departure time from the stop.
-    """    
+    """
+
     stop: Stop
     arrival_time: datetime = Field(alias="arrivalTime")
     departure_time: datetime = Field(alias="departureTime")
@@ -127,6 +135,7 @@ class Trip(BaseModel):
         route (Route): The route associated with the trip.
         stop_times (list[StopTime]): A list of stop times for the trip.
     """
+
     head_sign: str = Field(alias="headSign")
     route: Route
     stop_times: list[StopTime] = Field(alias="stopTimes")
@@ -144,6 +153,7 @@ class Departure(BaseModel):
         stop_time (StopTime): The stop time associated with the departure.
         trip (Trip): The trip associated with the departure.
     """
+
     stop_time: StopTime = Field(alias="stopTime")
     trip: Trip
 
@@ -161,6 +171,7 @@ class Leg(BaseModel):
         arrival_time (datetime): The arrival time for the leg.
         trip (Trip | None): The trip associated with the leg (if applicable).
     """
+
     from_coordinate: Coordinate = Field(alias="from")
     from_stop: Stop | None = Field(alias="fromStop", default=None)
     to_coordinate: Coordinate = Field(alias="to")
@@ -240,6 +251,7 @@ class Connection(BaseModel):
     Attributes:
         legs (list[Leg]): A list of legs that make up the connection.
     """
+
     legs: list[Leg]
 
     @staticmethod
@@ -270,7 +282,7 @@ class Connection(BaseModel):
     @property
     def first_route_leg(self) -> Leg | None:
         """Get the first route leg of the connection.
-        
+
         Returns:
             Leg | None: The first route leg, or None if no route legs exist.
         """
@@ -296,7 +308,7 @@ class Connection(BaseModel):
     @property
     def first_stop(self) -> Stop | None:
         """Get the first stop of the connection.
-        
+
         Returns:
             Stop | None: The first stop, or None if no stop is passed.
         """
@@ -316,7 +328,7 @@ class Connection(BaseModel):
     @property
     def departure_time(self) -> datetime:
         """Get the departure time of the connection.
-        
+
         Returns:
             datetime: The departure time.
         """
@@ -334,7 +346,7 @@ class Connection(BaseModel):
     @property
     def from_coordinate(self) -> Coordinate:
         """Get the starting coordinate of the connection.
-        
+
         Returns:
             Coordinate: The starting coordinate.
         """
@@ -352,7 +364,7 @@ class Connection(BaseModel):
     @property
     def from_stop(self) -> Stop | None:
         """Get the starting stop of the connection.
-        
+
         Returns:
             Stop | None: The starting stop, or None if connection does not start at stop.
         """
@@ -370,7 +382,7 @@ class Connection(BaseModel):
     @property
     def duration(self) -> int:
         """Calculate the duration of the connection in seconds.
-        
+
         Returns:
             int: The duration in seconds.
         """
@@ -381,7 +393,7 @@ class Connection(BaseModel):
         """Calculate the travel duration of the connection in seconds.
 
         The travel duration is the sum of the duration of all legs, exluding any waiting time.
-        
+
         Returns:
             int: The travel duration in seconds.
         """
@@ -412,7 +424,7 @@ class Connection(BaseModel):
     @property
     def walk_distance(self) -> float:
         """Calculate the walking distance of the connection.
-        
+
         Returns:
             float: The total walking distance in meters.
         """
@@ -430,7 +442,7 @@ class Connection(BaseModel):
     @property
     def walk_duration(self) -> int:
         """Calculate the walking duration of the connection in seconds.
-        
+
         Returns:
             int: The total walking duration in seconds.
         """
@@ -499,6 +511,7 @@ class StopConnection(BaseModel):
         connecting_leg (Leg): The leg connecting to the stop.
         connection (Connection | None): The connection to the stop.
     """
+
     stop: Stop
     connecting_leg: Leg = Field(alias="connectingLeg")
     connection: Connection | None = None
@@ -511,5 +524,6 @@ class DistanceToStop(BaseModel):
         stop (Stop): The stop.
         distance (float): The distance to the stop in meters.
     """
+
     stop: Stop
     distance: float

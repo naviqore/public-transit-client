@@ -57,7 +57,7 @@ class PublicTransitClient:
                 response.raise_for_status()
 
     def search_stops(
-            self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
+        self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
     ) -> list[Stop]:
         """Search for stops by a query string.
 
@@ -74,7 +74,7 @@ class PublicTransitClient:
         return [Stop(**stop) for stop in data]
 
     def nearest_stops(
-            self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
+        self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
     ) -> list[DistanceToStop]:
         """Find the nearest stops to a given coordinate.
 
@@ -108,11 +108,11 @@ class PublicTransitClient:
         return Stop(**data) if data else None
 
     def get_next_departures(
-            self,
-            stop: str | Stop,
-            departure: datetime | None = None,
-            limit: int = 10,
-            until: datetime | None = None,
+        self,
+        stop: str | Stop,
+        departure: datetime | None = None,
+        limit: int = 10,
+        until: datetime | None = None,
     ) -> list[Departure]:
         """Retrieve the next departures from a specific stop.
 
@@ -230,7 +230,7 @@ class PublicTransitClient:
         max_travel_time: int | None = None,
         min_transfer_time: int | None = None,
     ) -> dict[str, str]:
-        
+
         if isinstance(start, Stop):
             start = start.id
         elif isinstance(start, Coordinate):
@@ -240,7 +240,7 @@ class PublicTransitClient:
             destination = destination.id
         elif isinstance(destination, Coordinate):
             destination = destination.to_tuple()
-        
+
         params: dict[str, str] = {
             "dateTime": (datetime.now() if time is None else time).strftime(
                 "%Y-%m-%dT%H:%M:%S"
