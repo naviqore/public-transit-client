@@ -46,7 +46,7 @@ class PublicTransitClient:
     def search_stops(
             self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
     ) -> list[Stop]:
-        params = {"query": query, "limit": limit, "searchType": search_type.name}
+        params = {"query": query, "limit": str(limit), "searchType": search_type.name}
         data = self._send_get_request("/schedule/stops/autocomplete", params)
         return [Stop(**stop) for stop in data]
 
@@ -54,10 +54,10 @@ class PublicTransitClient:
             self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
     ) -> list[DistanceToStop]:
         params = {
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude,
-            "limit": limit,
-            "maxDistance": max_distance,
+            "latitude": str(coordinate.latitude),
+            "longitude": str(coordinate.longitude),
+            "limit": str(limit),
+            "maxDistance": str(max_distance),
         }
         data = self._send_get_request("/schedule/stops/nearest", params)
         return [DistanceToStop(**stop) for stop in data]
