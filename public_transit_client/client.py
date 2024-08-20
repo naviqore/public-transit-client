@@ -12,14 +12,27 @@ LOG = logging.getLogger(__name__)
 
 
 class PublicTransitClientException(Exception):
+    """Exception raised for errors in the Public Transit Client."""
+
     def __init__(self, api_error: APIError):
+        """Initialize the PublicTransitClientException with an APIError.
+
+        Args:
+            api_error (APIError): The error object returned by the API.
+        """
         self.api_error = api_error
         super().__init__(f"API Error {api_error.status}: {api_error.message}")
 
 
 class PublicTransitClient:
+    """A client to interact with the public transit API."""
 
     def __init__(self, host: str):
+        """Initialize the PublicTransitClient with the API host URL.
+
+        Args:
+            host (str): The base URL of the public transit API.
+        """
         self.host = host
 
     def _send_get_request(self, endpoint: str, params: dict[str, str] | None = None):
@@ -46,6 +59,16 @@ class PublicTransitClient:
     def search_stops(
             self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
     ) -> list[Stop]:
+        """Search for stops by a query string.
+
+        Args:
+            query (str): The search query for the stop name.
+            limit (int, optional): The maximum number of stops to return. Defaults to 10.
+            search_type (SearchType, optional): The type of search to perform (EXACT, CONTAINS, etc.). Defaults to CONTAINS.
+
+        Returns:
+            list[Stop]: A list of Stop objects that match the query.
+        """
         params = {"query": query, "limit": str(limit), "searchType": search_type.name}
         data = self._send_get_request("/schedule/stops/autocomplete", params)
         return [Stop(**stop) for stop in data]
@@ -53,6 +76,16 @@ class PublicTransitClient:
     def nearest_stops(
             self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
     ) -> list[DistanceToStop]:
+        """Find the nearest stops to a given coordinate.
+
+        Args:
+            coordinate (Coordinate): The geographical coordinate to search from.
+            limit (int, optional): The maximum number of stops to return. Defaults to 10.
+            max_distance (int, optional): The maximum distance (in meters) from the coordinate to search. Defaults to 1000.
+
+        Returns:
+            list[DistanceToStop]: A list of DistanceToStop objects representing nearby stops.
+        """
         params = {
             "latitude": str(coordinate.latitude),
             "longitude": str(coordinate.longitude),
@@ -63,6 +96,14 @@ class PublicTransitClient:
         return [DistanceToStop(**stop) for stop in data]
 
     def get_stop(self, stop_id: str) -> Stop | None:
+        """Retrieve details of a specific stop by its ID.
+
+        Args:
+            stop_id (str): The unique identifier of the stop.
+
+        Returns:
+            Stop | None: A Stop object if found, otherwise None.
+        """
         data = self._send_get_request(f"/schedule/stops/{stop_id}")
         return Stop(**data) if data else None
 
@@ -73,6 +114,17 @@ class PublicTransitClient:
             limit: int = 10,
             until: datetime | None = None,
     ) -> list[Departure]:
+        """Retrieve the next departures from a specific stop.
+
+        Args:
+            stop (str | Stop): The stop ID or Stop object to get departures from.
+            departure (datetime, optional): The starting time for the departures search. Defaults to None (=now).
+            limit (int, optional): The maximum number of departures to return. Defaults to 10.
+            until (datetime, optional): The end time for the departures search. Defaults to None.
+
+        Returns:
+            list[Departure]: A list of Departure objects.
+        """
         stop_id = stop.id if isinstance(stop, Stop) else stop
         params = {"limit": str(limit)}
         if departure:
@@ -94,6 +146,21 @@ class PublicTransitClient:
             max_travel_time: int | None = None,
             min_transfer_time: int | None = None,
     ) -> list[Connection]:
+        """Retrieve a list of possible connections between two stops.
+
+        Args:
+            from_stop (str | Stop): The starting stop ID or Stop object.
+            to_stop (str | Stop): The destination stop ID or Stop object.
+            time (datetime, optional): The time for the connection search. Defaults to None (=now).
+            time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
+            max_walking_duration (int, optional): Maximum walking duration in minutes. Defaults to None.
+            max_transfer_number (int, optional): Maximum number of transfers allowed. Defaults to None.
+            max_travel_time (int, optional): Maximum travel time in minutes. Defaults to None.
+            min_transfer_time (int, optional): Minimum transfer time in minutes. Defaults to None.
+
+        Returns:
+            list[Connection]: A list of Connection objects representing the possible routes.
+        """
         params = self._build_params_dict(
             from_stop,
             to_stop,
@@ -118,6 +185,21 @@ class PublicTransitClient:
             min_transfer_time: int | None = None,
             return_connections: bool = False,
     ) -> list[StopConnection]:
+        """Retrieve isolines (areas reachable within a certain time) from a specific stop.
+
+        Args:
+            from_stop (str | Stop): The starting stop ID or Stop object.
+            time (datetime, optional): The time for the isoline calculation. Defaults to None (=now).
+            time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
+            max_walking_duration (int, optional): Maximum walking duration in minutes. Defaults to None.
+            max_transfer_number (int, optional): Maximum number of transfers allowed. Defaults to None.
+            max_travel_time (int, optional): Maximum travel time in minutes. Defaults to None.
+            min_transfer_time (int, optional): Minimum transfer time in minutes. Defaults to None.
+            return_connections (bool, optional): Whether to return detailed connections. Defaults to False.
+
+        Returns:
+            list[StopConnection]: A list of StopConnection objects representing the reachable areas.
+        """
         params = self._build_params_dict(
             from_stop,
             time=time,
