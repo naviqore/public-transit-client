@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional
 
 import requests
 from requests import Response
@@ -23,7 +22,7 @@ class PublicTransitClient:
     def __init__(self, host: str):
         self.host = host
 
-    def _send_get_request(self, endpoint: str, params: Optional[dict] = None):
+    def _send_get_request(self, endpoint: str, params: dict[str, str] | None = None):
         """Sends a GET request to the API and handles the response."""
         url = f"{self.host}{endpoint}"
         LOG.debug(f"Sending GET request to {url} with params {params}")
@@ -46,14 +45,14 @@ class PublicTransitClient:
 
     def search_stops(
             self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
-    ) -> List[Stop]:
+    ) -> list[Stop]:
         params = {"query": query, "limit": limit, "searchType": search_type.name}
         data = self._send_get_request("/schedule/stops/autocomplete", params)
         return [Stop(**stop) for stop in data]
 
     def nearest_stops(
             self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
-    ) -> List[DistanceToStop]:
+    ) -> list[DistanceToStop]:
         params = {
             "latitude": coordinate.latitude,
             "longitude": coordinate.longitude,
@@ -73,7 +72,7 @@ class PublicTransitClient:
             departure: datetime | None = None,
             limit: int = 10,
             until: datetime | None = None,
-    ) -> List[Departure]:
+    ) -> list[Departure]:
         stop_id = stop.id if isinstance(stop, Stop) else stop
         params = {"limit": str(limit)}
         if departure:
@@ -94,7 +93,7 @@ class PublicTransitClient:
             max_transfer_number: int | None = None,
             max_travel_time: int | None = None,
             min_transfer_time: int | None = None,
-    ) -> List[Connection]:
+    ) -> list[Connection]:
         params = self._build_params_dict(
             from_stop,
             to_stop,
@@ -118,7 +117,7 @@ class PublicTransitClient:
             max_travel_time: int | None = None,
             min_transfer_time: int | None = None,
             return_connections: bool = False,
-    ) -> List[StopConnection]:
+    ) -> list[StopConnection]:
         params = self._build_params_dict(
             from_stop,
             time=time,
@@ -145,8 +144,8 @@ class PublicTransitClient:
             max_transfer_number: int | None = None,
             max_travel_time: int | None = None,
             min_transfer_time: int | None = None,
-    ) -> Dict[str, str]:
-        params: Dict[str, str] = {
+    ) -> dict[str, str]:
+        params: dict[str, str] = {
             "sourceStopId": from_stop.id if isinstance(from_stop, Stop) else from_stop,
             "dateTime": (datetime.now() if time is None else time).strftime(
                 "%Y-%m-%dT%H:%M:%S"
