@@ -146,7 +146,7 @@ class PublicTransitClient:
         max_travel_time: int | None = None,
         min_transfer_time: int | None = None,
     ) -> list[Connection]:
-        """Retrieve a list of possible connections between two stops.
+        """Retrieve a list of possible connections between two stops and or locations.
 
         Args:
             start (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
@@ -187,7 +187,7 @@ class PublicTransitClient:
         min_transfer_time: int | None = None,
         return_connections: bool = False,
     ) -> list[StopConnection]:
-        """Retrieve isolines (areas reachable within a certain time) from a specific stop.
+        """Retrieve isolines (areas reachable within a certain time) from a specific stop / location.
 
         Args:
             start (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
