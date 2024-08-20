@@ -136,21 +136,23 @@ class PublicTransitClient:
         return [Departure(**dep) for dep in data]
 
     def get_connections(
-            self,
-            from_stop: str | Stop,
-            to_stop: str | Stop,
-            time: datetime | None = None,
-            time_type: TimeType = TimeType.DEPARTURE,
-            max_walking_duration: int | None = None,
-            max_transfer_number: int | None = None,
-            max_travel_time: int | None = None,
-            min_transfer_time: int | None = None,
+        self,
+        start: Stop | Coordinate | str | tuple[float, float],
+        destination: str | Stop | Coordinate | tuple[float, float],
+        time: datetime | None = None,
+        time_type: TimeType = TimeType.DEPARTURE,
+        max_walking_duration: int | None = None,
+        max_transfer_number: int | None = None,
+        max_travel_time: int | None = None,
+        min_transfer_time: int | None = None,
     ) -> list[Connection]:
         """Retrieve a list of possible connections between two stops.
 
         Args:
-            from_stop (str | Stop): The starting stop ID or Stop object.
-            to_stop (str | Stop): The destination stop ID or Stop object.
+            start (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
+                Coordinates tuple.
+            destrination (Stop | Coordinate | str | tuple[float, float]): The destination Stop object, Coordinate object,
+                Stop ID or Coordinates tuple.
             time (datetime, optional): The time for the connection search. Defaults to None (=now).
             time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
             max_walking_duration (int, optional): Maximum walking duration in minutes. Defaults to None.
@@ -162,8 +164,8 @@ class PublicTransitClient:
             list[Connection]: A list of Connection objects representing the possible routes.
         """
         params = self._build_params_dict(
-            from_stop,
-            to_stop,
+            start,
+            destination,
             time=time,
             time_type=time_type,
             max_walking_duration=max_walking_duration,
@@ -175,20 +177,21 @@ class PublicTransitClient:
         return [Connection(**conn) for conn in data]
 
     def get_isolines(
-            self,
-            from_stop: str | Stop,
-            time: datetime | None = None,
-            time_type: TimeType = TimeType.DEPARTURE,
-            max_walking_duration: int | None = None,
-            max_transfer_number: int | None = None,
-            max_travel_time: int | None = None,
-            min_transfer_time: int | None = None,
-            return_connections: bool = False,
+        self,
+        start: Stop | Coordinate | str | tuple[float, float],
+        time: datetime | None = None,
+        time_type: TimeType = TimeType.DEPARTURE,
+        max_walking_duration: int | None = None,
+        max_transfer_number: int | None = None,
+        max_travel_time: int | None = None,
+        min_transfer_time: int | None = None,
+        return_connections: bool = False,
     ) -> list[StopConnection]:
         """Retrieve isolines (areas reachable within a certain time) from a specific stop.
 
         Args:
-            from_stop (str | Stop): The starting stop ID or Stop object.
+            start (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
+                Coordinates tuple.
             time (datetime, optional): The time for the isoline calculation. Defaults to None (=now).
             time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
             max_walking_duration (int, optional): Maximum walking duration in minutes. Defaults to None.
@@ -201,7 +204,7 @@ class PublicTransitClient:
             list[StopConnection]: A list of StopConnection objects representing the reachable areas.
         """
         params = self._build_params_dict(
-            from_stop,
+            start,
             time=time,
             time_type=time_type,
             max_walking_duration=max_walking_duration,
@@ -218,25 +221,44 @@ class PublicTransitClient:
 
     @staticmethod
     def _build_params_dict(
-            from_stop: str | Stop,
-            to_stop: str | Stop | None = None,
-            time: datetime | None = None,
-            time_type: TimeType | None = None,
-            max_walking_duration: int | None = None,
-            max_transfer_number: int | None = None,
-            max_travel_time: int | None = None,
-            min_transfer_time: int | None = None,
+        start: Stop | Coordinate | str | tuple[float, float],
+        destination: str | Stop | Coordinate | tuple[float, float] | None = None,
+        time: datetime | None = None,
+        time_type: TimeType | None = None,
+        max_walking_duration: int | None = None,
+        max_transfer_number: int | None = None,
+        max_travel_time: int | None = None,
+        min_transfer_time: int | None = None,
     ) -> dict[str, str]:
+        
+        if isinstance(start, Stop):
+            start = start.id
+        elif isinstance(start, Coordinate):
+            start = start.to_tuple()
+
+        if isinstance(destination, Stop):
+            destination = destination.id
+        elif isinstance(destination, Coordinate):
+            destination = destination.to_tuple()
+        
         params: dict[str, str] = {
-            "sourceStopId": from_stop.id if isinstance(from_stop, Stop) else from_stop,
             "dateTime": (datetime.now() if time is None else time).strftime(
                 "%Y-%m-%dT%H:%M:%S"
             ),
         }
-        if to_stop:
-            params["targetStopId"] = (
-                to_stop.id if isinstance(to_stop, Stop) else to_stop
-            )
+
+        if start is isinstance(start, tuple):
+            params["sourceLatitude"] = str(start[0])
+            params["sourceLongitude"] = str(start[1])
+        elif isinstance(start, str):
+            params["sourceStopId"] = start
+
+        if destination is isinstance(destination, tuple):
+            params["targetLatitude"] = str(destination[0])
+            params["targetLongitude"] = str(destination[1])
+        elif isinstance(destination, str):
+            params["targetStopId"] = destination
+
         if time_type:
             params["timeType"] = time_type.value
         if max_walking_duration is not None:
