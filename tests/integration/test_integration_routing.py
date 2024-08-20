@@ -21,8 +21,8 @@ def test_get_connections(client):
     to_stop = "BULLFROG"
     departure_time = datetime(2008, 6, 1)
     connections = client.get_connections(
-        from_stop=from_stop,
-        to_stop=to_stop,
+        start=from_stop,
+        destination=to_stop,
         time=departure_time,
         time_type=TimeType.DEPARTURE,
     )
@@ -42,8 +42,8 @@ def test_get_connections_invalid_stop(client):
 
     with pytest.raises(PublicTransitClientException) as exc_info:
         client.get_connections(
-            from_stop=from_stop,
-            to_stop=to_stop,
+            start=from_stop,
+            destination=to_stop,
             time=departure_time,
             time_type=TimeType.DEPARTURE,
         )
@@ -60,8 +60,8 @@ def test_get_connections_negative_walking_duration(client):
 
     with pytest.raises(PublicTransitClientException) as exc_info:
         client.get_connections(
-            from_stop=from_stop,
-            to_stop=to_stop,
+            start=from_stop,
+            destination=to_stop,
             time=departure_time,
             time_type=TimeType.DEPARTURE,
             max_walking_duration=-10,
@@ -79,7 +79,7 @@ def test_get_isolines(client):
     from_stop = "NANAA"
     departure_time = datetime(2008, 6, 1)
     isolines = client.get_isolines(
-        from_stop=from_stop,
+        start=from_stop,
         time=departure_time,
         time_type=TimeType.DEPARTURE,
         max_walking_duration=10,
@@ -101,7 +101,7 @@ def test_get_isolines_invalid_stop(client):
 
     with pytest.raises(PublicTransitClientException) as exc_info:
         client.get_isolines(
-            from_stop=from_stop,
+            start=from_stop,
             time=departure_time,
             time_type=TimeType.DEPARTURE,
             max_walking_duration=10,
