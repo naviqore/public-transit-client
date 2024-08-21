@@ -34,4 +34,4 @@ jobs:
         env:
           TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-          poetry publish --username __token__ --password $TOKEN --no-interaction --build
+          poetry publish --username __token__ --password $TOKEN --no-interaction
