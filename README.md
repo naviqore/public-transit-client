@@ -63,4 +63,5 @@ poetry run pytest -m integration
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see
+the [LICENSE](https://github.com/naviqore/public-transit-client/blob/main/LICENSE) file for details.
