@@ -27,12 +27,14 @@ print(response)
 
 See the integration tests for more examples.
 
-## Testing
+## Development
+
+### Testing
 
 This project uses pytest for both unit and integration testing. The tests are organized into separate folders to ensure
 clarity and separation of concerns.
 
-## Running Unit Tests
+### Unit Tests
 
 Unit tests are designed to test individual components in isolation. To run the unit tests, simply execute:
 
@@ -40,7 +42,7 @@ Unit tests are designed to test individual components in isolation. To run the u
 poetry run pytest -m unit
 ```
 
-## Running Integration Tests
+### Integration Tests
 
 Integration tests ensure that the components work together as expected in a more realistic environment. These tests
 require the service to be running, usually within a Docker container.
