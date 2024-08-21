@@ -71,7 +71,7 @@ class Coordinate(BaseModel):
             distance.distance(
                 (self.latitude, self.longitude),
                 (other.latitude, other.longitude),
-            ).meters  # type: ignore
+            ).meters
         )
 
     def to_tuple(self) -> tuple[float, float]:
