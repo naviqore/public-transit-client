@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "public-transit-client"
+version = "0.1.0"
+description = "Client to access the public transit service API endpoints."
+authors = ["Lukas Connolly <lukas@connolly.ch>", "Merlin Unterfinger <info@munterfinger.ch>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.3"
+pydantic = "^2.8.2"
+geopy = "^2.4.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+mypy = "^1.11.1"
+black = "^24.8.0"
+isort = "^5.13.2"
+types-requests = "^2.32.0.20240712"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
