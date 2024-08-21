@@ -1,9 +1,16 @@
 [tool.poetry]
 name = "public-transit-client"
-version = "0.1.0"
+version = "0.1.1"
 description = "Client to access the public transit service API endpoints."
-authors = ["Lukas Connolly <lukas@connolly.ch>", "Merlin Unterfinger <info@munterfinger.ch>"]
+authors = [
+    "Lukas Connolly <lukas@connolly.ch>",
+    "Merlin Unterfinger <info@munterfinger.ch>"
+]
 readme = "README.md"
+license = "MIT"
+homepage = "https://pypi.org/project/public-transit-client/"
+documentation = "https://naviqore.github.io/documentation/introduction.html"
+repository = "https://github.com/naviqore/public-transit-client"
 
 [tool.poetry.dependencies]
 python = "^3.12"
