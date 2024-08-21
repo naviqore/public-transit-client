@@ -1,7 +1,9 @@
 import pytest
 
-from public_transit_client.client import (PublicTransitClient,
-                                          PublicTransitClientException)
+from public_transit_client.client import (
+    PublicTransitClient,
+    PublicTransitClientException,
+)
 from public_transit_client.model import Coordinate, SearchType, Stop
 
 HOST = "http://localhost:8080"

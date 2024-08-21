@@ -4,10 +4,18 @@ from unittest.mock import Mock, patch
 import pytest
 from requests import Response
 
-from public_transit_client.client import (PublicTransitClient,
-                                          PublicTransitClientException)
-from public_transit_client.model import (Connection, Coordinate, Departure,
-                                         SearchType, Stop, StopConnection)
+from public_transit_client.client import (
+    PublicTransitClient,
+    PublicTransitClientException,
+)
+from public_transit_client.model import (
+    Connection,
+    Coordinate,
+    Departure,
+    SearchType,
+    Stop,
+    StopConnection,
+)
 
 
 @pytest.fixture(scope="module")
@@ -52,8 +60,8 @@ def test_send_get_request_error(client):
             client._send_get_request("/fake_endpoint")
 
         assert (
-            "API Error 404: The requested stop with ID 'NOT_EXISTING' was not found."
-            in str(exc_info.value)
+                "API Error 404: The requested stop with ID 'NOT_EXISTING' was not found."
+                in str(exc_info.value)
         )
         mock_get.assert_called_once_with("http://fakehost/fake_endpoint", params=None)
 
