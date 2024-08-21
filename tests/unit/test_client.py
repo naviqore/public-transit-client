@@ -187,7 +187,7 @@ def test_get_connections(client):
         )
 
         connections = client.get_connections(
-            start="NANAA", destination="BULLFROG", time=datetime(2024, 8, 18, 17, 0)
+            source="NANAA", target="BULLFROG", time=datetime(2024, 8, 18, 17, 0)
         )
 
         assert isinstance(connections, list)
@@ -219,7 +219,7 @@ def test_get_isolines(client):
         )
 
         isolines = client.get_isolines(
-            start="NANAA",
+            source="NANAA",
             time=datetime(2024, 8, 18, 17, 0),
             return_connections=True,
         )

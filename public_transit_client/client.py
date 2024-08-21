@@ -57,7 +57,7 @@ class PublicTransitClient:
                 response.raise_for_status()
 
     def search_stops(
-        self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
+            self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
     ) -> list[Stop]:
         """Search for stops by a query string.
 
@@ -74,7 +74,7 @@ class PublicTransitClient:
         return [Stop(**stop) for stop in data]
 
     def nearest_stops(
-        self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
+            self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
     ) -> list[DistanceToStop]:
         """Find the nearest stops to a given coordinate.
 
@@ -108,11 +108,11 @@ class PublicTransitClient:
         return Stop(**data) if data else None
 
     def get_next_departures(
-        self,
-        stop: str | Stop,
-        departure: datetime | None = None,
-        limit: int = 10,
-        until: datetime | None = None,
+            self,
+            stop: str | Stop,
+            departure: datetime | None = None,
+            limit: int = 10,
+            until: datetime | None = None,
     ) -> list[Departure]:
         """Retrieve the next departures from a specific stop.
 
@@ -136,22 +136,22 @@ class PublicTransitClient:
         return [Departure(**dep) for dep in data]
 
     def get_connections(
-        self,
-        start: Stop | Coordinate | str | tuple[float, float],
-        destination: str | Stop | Coordinate | tuple[float, float],
-        time: datetime | None = None,
-        time_type: TimeType = TimeType.DEPARTURE,
-        max_walking_duration: int | None = None,
-        max_transfer_number: int | None = None,
-        max_travel_time: int | None = None,
-        min_transfer_time: int | None = None,
+            self,
+            source: Stop | Coordinate | str | tuple[float, float],
+            target: str | Stop | Coordinate | tuple[float, float],
+            time: datetime | None = None,
+            time_type: TimeType = TimeType.DEPARTURE,
+            max_walking_duration: int | None = None,
+            max_transfer_number: int | None = None,
+            max_travel_time: int | None = None,
+            min_transfer_time: int | None = None,
     ) -> list[Connection]:
         """Retrieve a list of possible connections between two stops and or locations.
 
         Args:
-            start (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
+            source (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
                 Coordinates tuple.
-            destrination (Stop | Coordinate | str | tuple[float, float]): The destination Stop object, Coordinate object,
+            target (Stop | Coordinate | str | tuple[float, float]): The destination Stop object, Coordinate object,
                 Stop ID or Coordinates tuple.
             time (datetime, optional): The time for the connection search. Defaults to None (=now).
             time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
@@ -164,8 +164,8 @@ class PublicTransitClient:
             list[Connection]: A list of Connection objects representing the possible routes.
         """
         params = self._build_params_dict(
-            start,
-            destination,
+            source,
+            target,
             time=time,
             time_type=time_type,
             max_walking_duration=max_walking_duration,
@@ -177,20 +177,20 @@ class PublicTransitClient:
         return [Connection(**conn) for conn in data]
 
     def get_isolines(
-        self,
-        start: Stop | Coordinate | str | tuple[float, float],
-        time: datetime | None = None,
-        time_type: TimeType = TimeType.DEPARTURE,
-        max_walking_duration: int | None = None,
-        max_transfer_number: int | None = None,
-        max_travel_time: int | None = None,
-        min_transfer_time: int | None = None,
-        return_connections: bool = False,
+            self,
+            source: Stop | Coordinate | str | tuple[float, float],
+            time: datetime | None = None,
+            time_type: TimeType = TimeType.DEPARTURE,
+            max_walking_duration: int | None = None,
+            max_transfer_number: int | None = None,
+            max_travel_time: int | None = None,
+            min_transfer_time: int | None = None,
+            return_connections: bool = False,
     ) -> list[StopConnection]:
         """Retrieve isolines (areas reachable within a certain time) from a specific stop / location.
 
         Args:
-            start (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
+            source (Stop | Coordinate | str | tuple[float, float]): The starting Stop object, Coordinate object, Stop ID or
                 Coordinates tuple.
             time (datetime, optional): The time for the isoline calculation. Defaults to None (=now).
             time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
@@ -204,7 +204,7 @@ class PublicTransitClient:
             list[StopConnection]: A list of StopConnection objects representing the reachable areas.
         """
         params = self._build_params_dict(
-            start,
+            source,
             time=time,
             time_type=time_type,
             max_walking_duration=max_walking_duration,
@@ -221,25 +221,25 @@ class PublicTransitClient:
 
     @staticmethod
     def _build_params_dict(
-        start: Stop | Coordinate | str | tuple[float, float],
-        destination: str | Stop | Coordinate | tuple[float, float] | None = None,
-        time: datetime | None = None,
-        time_type: TimeType | None = None,
-        max_walking_duration: int | None = None,
-        max_transfer_number: int | None = None,
-        max_travel_time: int | None = None,
-        min_transfer_time: int | None = None,
+            source: Stop | Coordinate | str | tuple[float, float],
+            target: str | Stop | Coordinate | tuple[float, float] | None = None,
+            time: datetime | None = None,
+            time_type: TimeType | None = None,
+            max_walking_duration: int | None = None,
+            max_transfer_number: int | None = None,
+            max_travel_time: int | None = None,
+            min_transfer_time: int | None = None,
     ) -> dict[str, str]:
 
-        if isinstance(start, Stop):
-            start = start.id
-        elif isinstance(start, Coordinate):
-            start = start.to_tuple()
+        if isinstance(source, Stop):
+            source = source.id
+        elif isinstance(source, Coordinate):
+            source = source.to_tuple()
 
-        if isinstance(destination, Stop):
-            destination = destination.id
-        elif isinstance(destination, Coordinate):
-            destination = destination.to_tuple()
+        if isinstance(target, Stop):
+            target = target.id
+        elif isinstance(target, Coordinate):
+            target = target.to_tuple()
 
         params: dict[str, str] = {
             "dateTime": (datetime.now() if time is None else time).strftime(
@@ -247,17 +247,17 @@ class PublicTransitClient:
             ),
         }
 
-        if start is isinstance(start, tuple):
-            params["sourceLatitude"] = str(start[0]) # type: ignore
-            params["sourceLongitude"] = str(start[1]) # type: ignore
-        elif isinstance(start, str):
-            params["sourceStopId"] = start
+        if source is isinstance(source, tuple):
+            params["sourceLatitude"] = str(source[0])  # type: ignore
+            params["sourceLongitude"] = str(source[1])  # type: ignore
+        elif isinstance(source, str):
+            params["sourceStopId"] = source
 
-        if destination is isinstance(destination, tuple):
-            params["targetLatitude"] = str(destination[0]) # type: ignore
-            params["targetLongitude"] = str(destination[1]) # type: ignore
-        elif isinstance(destination, str):
-            params["targetStopId"] = destination
+        if target is isinstance(target, tuple):
+            params["targetLatitude"] = str(target[0])  # type: ignore
+            params["targetLongitude"] = str(target[1])  # type: ignore
+        elif isinstance(target, str):
+            params["targetStopId"] = target
 
         if time_type:
             params["timeType"] = time_type.value
