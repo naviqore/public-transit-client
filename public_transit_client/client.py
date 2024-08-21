@@ -4,9 +4,17 @@ from datetime import datetime
 import requests
 from requests import Response
 
-from public_transit_client.model import (APIError, Connection, Coordinate,
-                                         Departure, DistanceToStop, SearchType,
-                                         Stop, StopConnection, TimeType)
+from public_transit_client.model import (
+    APIError,
+    Connection,
+    Coordinate,
+    Departure,
+    DistanceToStop,
+    SearchType,
+    Stop,
+    StopConnection,
+    TimeType,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -248,16 +256,17 @@ class PublicTransitClient:
         }
 
         if source is isinstance(source, tuple):
-            params["sourceLatitude"] = str(source[0])  # type: ignore
-            params["sourceLongitude"] = str(source[1])  # type: ignore
+            params["sourceLatitude"] = str(source[0])
+            params["sourceLongitude"] = str(source[1])
         elif isinstance(source, str):
             params["sourceStopId"] = source
 
-        if target is isinstance(target, tuple):
-            params["targetLatitude"] = str(target[0])  # type: ignore
-            params["targetLongitude"] = str(target[1])  # type: ignore
-        elif isinstance(target, str):
-            params["targetStopId"] = target
+        if target is not None:
+            if target is isinstance(target, tuple):
+                params["targetLatitude"] = str(target[0])
+                params["targetLongitude"] = str(target[1])
+            elif isinstance(target, str):
+                params["targetStopId"] = target
 
         if time_type:
             params["timeType"] = time_type.value
