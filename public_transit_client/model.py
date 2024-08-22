@@ -142,7 +142,6 @@ class Trip(BaseModel):
 
     @field_validator("stop_times", mode="before")
     def _set_stop_times_not_none(cls, v: list[StopTime] | None) -> list[StopTime]:
-        print("I AM RUNNING!!! AND FUCK MYPY")
         return v or []
 
 
