@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
 from itertools import pairwise
 
@@ -56,6 +56,64 @@ class APIError(BaseModel):
     error: str
     path: str
     message: str
+
+
+class ScheduleValidity(BaseModel):
+    """Model representing the validity of a schedule.
+
+    Attributes:
+        start_date (date): The start date of the schedule.
+        end_date (date): The end date of the schedule.
+    """
+    start_date: date = Field(alias="startDate")
+    end_date: date = Field(alias="endDate")
+
+    def is_date_valid(self, reference_date: date) -> bool:
+        """Check if a date is within the validity range.
+
+        Args:
+            reference_date (date): The date to check.
+
+        Returns:
+            bool: True if the date is within the range, False otherwise.
+        """
+        return self.start_date <= reference_date <= self.end_date
+
+
+class ScheduleInfo(BaseModel):
+    """Model representing schedule information.
+
+    Attributes:
+        has_accessibility (bool): Indicates if the schedule has accessibility information.
+        has_bikes (bool): Indicates if the schedule has bike information.
+        has_travel_modes (bool): Indicates if the schedule has travel mode information.
+        schedule_validity (ScheduleValidity): The validity of the schedule.
+    """
+    has_accessibility: bool = Field(alias="hasAccessibility")
+    has_bikes: bool = Field(alias="hasBikes")
+    has_travel_modes: bool = Field(alias="hasTravelModes")
+    schedule_validity: ScheduleValidity = Field(alias="scheduleValidity")
+
+
+class RouterInfo(BaseModel):
+    """Model representing information about the router.
+
+    Attributes:
+        supports_max_num_transfers (bool): Indicates if the router supports maximum number of transfers.
+        supports_max_travel_time (bool): Indicates if the router supports maximum travel time.
+        supports_max_walking_duration (bool): Indicates if the router supports maximum walking duration.
+        supports_min_transfer_duration (bool): Indicates if the router supports minimum transfer duration.
+        supports_accessibility (bool): Indicates if the router supports accessibility.
+        supports_bikes (bool): Indicates if the router supports bikes.
+        supports_travel_modes (bool): Indicates if the router supports travel modes.
+    """
+    supports_max_num_transfers: bool = Field(alias="supportsMaxNumTransfers")
+    supports_max_travel_time: bool = Field(alias="supportsMaxTravelTime")
+    supports_max_walking_duration: bool = Field(alias="supportsMaxWalkingDuration")
+    supports_min_transfer_duration: bool = Field(alias="supportsMinTransferDuration")
+    supports_accessibility: bool = Field(alias="supportsAccessibility")
+    supports_bikes: bool = Field(alias="supportsBikes")
+    supports_travel_modes: bool = Field(alias="supportsTravelModes")
 
 
 class QueryConfig(BaseModel):

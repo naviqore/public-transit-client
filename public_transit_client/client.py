@@ -14,7 +14,9 @@ from public_transit_client.model import (
     Stop,
     StopConnection,
     TimeType,
-    QueryConfig
+    QueryConfig,
+    ScheduleInfo,
+    RouterInfo,
 )
 
 LOG = logging.getLogger(__name__)
@@ -64,6 +66,11 @@ class PublicTransitClient:
             except ValueError:
                 LOG.error(f"Non-JSON response received: {response.text}")
                 response.raise_for_status()
+
+    def get_schedule_info(self) -> ScheduleInfo:
+        """Retrieve information about the schedule API."""
+        data = self._send_get_request("/schedule/")
+        return ScheduleInfo(**data)
 
     def search_stops(
             self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
@@ -143,6 +150,11 @@ class PublicTransitClient:
 
         data = self._send_get_request(f"/schedule/stops/{stop_id}/departures", params)
         return [Departure(**dep) for dep in data]
+
+    def get_router_info(self) -> RouterInfo:
+        """Retrieve information about the routing API."""
+        data = self._send_get_request("/routing/")
+        return RouterInfo(**data)
 
     def get_connections(
             self,
