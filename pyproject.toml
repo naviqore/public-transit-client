@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "public-transit-client"
-version = "0.1.2"
+version = "0.4.0"
 description = "Client to access the public transit service API endpoints."
 authors = [
     "Lukas Connolly <lukas@connolly.ch>",
