@@ -29,6 +29,17 @@ class TimeType(Enum):
     ARRIVAL = "ARRIVAL"
 
 
+class TransportMode(Enum):
+    """Enum for specifying the mode of transport."""
+    BUS = "BUS"
+    TRAM = "TRAM"
+    RAIL = "RAIL"
+    SHIP = "SHIP"
+    SUBWAY = "SUBWAY"
+    AERIAL_LIFT = "AERIAL_LIFT"
+    FUNICULAR = "FUNICULAR"
+
+
 class APIError(BaseModel):
     """Model representing an API error.
 
@@ -45,6 +56,27 @@ class APIError(BaseModel):
     error: str
     path: str
     message: str
+
+
+class QueryConfig(BaseModel):
+    """Model representing configuration for a query.
+
+    Attributes:
+        max_num_transfers (int | None): The maximum number of transfers allowed.
+        max_travel_time (int | None): The maximum travel time allowed.
+        max_walking_duration (int | None): The maximum walking duration allowed.
+        min_transfer_duration (int | None): The minimum transfer duration allowed.
+        accessibility (bool | None): Indicates if accessibility is required.
+        bikes (bool | None): Indicates if bikes are allowed.
+        travel_modes (list[TransportMode] | None): A list of allowed travel modes.
+    """
+    max_num_transfers: int | None = None
+    max_travel_time: int | None = None
+    max_walking_duration: int | None = None
+    min_transfer_duration: int | None = None
+    accessibility: bool | None = None
+    bikes: bool | None = None
+    travel_modes: list[TransportMode] | None = None
 
 
 class Coordinate(BaseModel):
