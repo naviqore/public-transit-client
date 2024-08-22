@@ -205,7 +205,8 @@ class Route(BaseModel):
     id: str
     name: str
     short_name: str = Field(alias="shortName")
-    transport_mode: str = Field(alias="transportMode")
+    transport_mode: TransportMode = Field(alias="transportMode")
+    transport_mode_description: str = Field(alias="transportModeDescription")
 
 
 class StopTime(BaseModel):
@@ -234,6 +235,8 @@ class Trip(BaseModel):
     head_sign: str = Field(alias="headSign")
     route: Route
     stop_times: list[StopTime] = Field(alias="stopTimes")
+    bikes_allowed: bool = Field(alias="bikesAllowed")
+    wheelchair_accessible: bool = Field(alias="wheelchairAccessible")
 
     @field_validator("stop_times", mode="before")
     def _set_stop_times_not_none(cls, v: list[StopTime] | None) -> list[StopTime]:
