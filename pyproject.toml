@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "public-transit-client"
-version = "0.1.1"
+version = "0.1.2"
 description = "Client to access the public transit service API endpoints."
 authors = [
     "Lukas Connolly <lukas@connolly.ch>",
-    "Merlin Unterfinger <info@munterfinger.ch>"
+    "Merlin Unterfinger <info@munterfinger.ch>",
+    "Michael Brunner"
 ]
 readme = "README.md"
 license = "MIT"
