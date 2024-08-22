@@ -46,7 +46,9 @@ class PublicTransitClient:
         """
         self.host = host
 
-    def _send_get_request(self, endpoint: str, params: dict[str, str | list[str]] | None = None):
+    def _send_get_request(
+        self, endpoint: str, params: dict[str, str | list[str]] | None = None
+    ):
         """Sends a GET request to the API and handles the response."""
         url = f"{self.host}{endpoint}"
         LOG.debug(f"Sending GET request to {url} with params {params}")
@@ -73,7 +75,7 @@ class PublicTransitClient:
         return ScheduleInfo(**data)
 
     def search_stops(
-            self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
+        self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
     ) -> list[Stop]:
         """Search for stops by a query string.
 
@@ -90,7 +92,7 @@ class PublicTransitClient:
         return [Stop(**stop) for stop in data]
 
     def nearest_stops(
-            self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
+        self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
     ) -> list[DistanceToStop]:
         """Find the nearest stops to a given coordinate.
 
@@ -124,11 +126,11 @@ class PublicTransitClient:
         return Stop(**data) if data else None
 
     def get_next_departures(
-            self,
-            stop: str | Stop,
-            departure: datetime | None = None,
-            limit: int = 10,
-            until: datetime | None = None,
+        self,
+        stop: str | Stop,
+        departure: datetime | None = None,
+        limit: int = 10,
+        until: datetime | None = None,
     ) -> list[Departure]:
         """Retrieve the next departures from a specific stop.
 
@@ -157,12 +159,12 @@ class PublicTransitClient:
         return RouterInfo(**data)
 
     def get_connections(
-            self,
-            source: Stop | Coordinate | str | tuple[float, float],
-            target: str | Stop | Coordinate | tuple[float, float],
-            time: datetime | None = None,
-            time_type: TimeType = TimeType.DEPARTURE,
-            query_config: QueryConfig | None = None,
+        self,
+        source: Stop | Coordinate | str | tuple[float, float],
+        target: str | Stop | Coordinate | tuple[float, float],
+        time: datetime | None = None,
+        time_type: TimeType = TimeType.DEPARTURE,
+        query_config: QueryConfig | None = None,
     ) -> list[Connection]:
         """Retrieve a list of possible connections between two stops and or locations.
 
@@ -189,12 +191,12 @@ class PublicTransitClient:
         return [Connection(**conn) for conn in data]
 
     def get_isolines(
-            self,
-            source: Stop | Coordinate | str | tuple[float, float],
-            time: datetime | None = None,
-            time_type: TimeType = TimeType.DEPARTURE,
-            query_config: QueryConfig | None = None,
-            return_connections: bool = False,
+        self,
+        source: Stop | Coordinate | str | tuple[float, float],
+        time: datetime | None = None,
+        time_type: TimeType = TimeType.DEPARTURE,
+        query_config: QueryConfig | None = None,
+        return_connections: bool = False,
     ) -> list[StopConnection]:
         """Retrieve isolines (areas reachable within a certain time) from a specific stop / location.
 
@@ -224,11 +226,11 @@ class PublicTransitClient:
 
     @staticmethod
     def _build_params_dict(
-            source: Stop | Coordinate | str | tuple[float, float],
-            target: str | Stop | Coordinate | tuple[float, float] | None = None,
-            time: datetime | None = None,
-            time_type: TimeType | None = None,
-            query_config: QueryConfig | None = None,
+        source: Stop | Coordinate | str | tuple[float, float],
+        target: str | Stop | Coordinate | tuple[float, float] | None = None,
+        time: datetime | None = None,
+        time_type: TimeType | None = None,
+        query_config: QueryConfig | None = None,
     ) -> dict[str, str | list[str]]:
 
         if isinstance(source, Stop):
