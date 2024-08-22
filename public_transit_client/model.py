@@ -31,6 +31,7 @@ class TimeType(Enum):
 
 class TransportMode(Enum):
     """Enum for specifying the mode of transport."""
+
     BUS = "BUS"
     TRAM = "TRAM"
     RAIL = "RAIL"
@@ -65,6 +66,7 @@ class ScheduleValidity(BaseModel):
         start_date (date): The start date of the schedule.
         end_date (date): The end date of the schedule.
     """
+
     start_date: date = Field(alias="startDate")
     end_date: date = Field(alias="endDate")
 
@@ -89,6 +91,7 @@ class ScheduleInfo(BaseModel):
         has_travel_modes (bool): Indicates if the schedule has travel mode information.
         schedule_validity (ScheduleValidity): The validity of the schedule.
     """
+
     has_accessibility: bool = Field(alias="hasAccessibility")
     has_bikes: bool = Field(alias="hasBikes")
     has_travel_modes: bool = Field(alias="hasTravelModes")
@@ -107,6 +110,7 @@ class RouterInfo(BaseModel):
         supports_bikes (bool): Indicates if the router supports bikes.
         supports_travel_modes (bool): Indicates if the router supports travel modes.
     """
+
     supports_max_num_transfers: bool = Field(alias="supportsMaxNumTransfers")
     supports_max_travel_time: bool = Field(alias="supportsMaxTravelTime")
     supports_max_walking_duration: bool = Field(alias="supportsMaxWalkingDuration")
@@ -128,6 +132,7 @@ class QueryConfig(BaseModel):
         bikes (bool | None): Indicates if bikes are allowed.
         travel_modes (list[TransportMode] | None): A list of allowed travel modes.
     """
+
     max_num_transfers: int | None = None
     max_travel_time: int | None = None
     max_walking_duration: int | None = None
@@ -480,7 +485,7 @@ class Connection(BaseModel):
     def travel_duration(self) -> int:
         """Calculate the travel duration of the connection in seconds.
 
-        The travel duration is the sum of the duration of all legs, exluding any waiting time.
+        The travel duration is the sum of the duration of all legs, excluding any waiting time.
 
         Returns:
             int: The travel duration in seconds.
