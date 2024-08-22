@@ -274,6 +274,10 @@ class PublicTransitClient:
             params["maxTravelTime"] = str(query_config.max_travel_time)
         if query_config.min_transfer_duration is not None:
             params["minTransferTime"] = str(query_config.min_transfer_duration)
+        if query_config.accessibility is not None:
+            params["wheelchairAccessible"] = str(query_config.accessibility).lower()
+        if query_config.bikes is not None:
+            params["bikesAllowed"] = str(query_config.bikes).lower()
         if query_config.travel_modes is not None:
             params["travelModes"] = [mode.value for mode in query_config.travel_modes]
 
