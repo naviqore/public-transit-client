@@ -6,7 +6,7 @@ from public_transit_client.client import (
     PublicTransitClient,
     PublicTransitClientException,
 )
-from public_transit_client.model import Connection, Coordinate, StopConnection, TimeType
+from public_transit_client.model import Connection, Coordinate, StopConnection, TimeType, QueryConfig
 
 HOST = "http://localhost:8080"
 
@@ -65,7 +65,7 @@ def test_get_connections_negative_walking_duration(client):
             target=to_stop,
             time=departure_time,
             time_type=TimeType.DEPARTURE,
-            max_walking_duration=-10,
+            query_config=QueryConfig(max_walking_duration=-1),
         )
 
     assert exc_info.value.api_error.status == 400
@@ -83,8 +83,10 @@ def test_get_isolines(client):
         source=from_stop,
         time=departure_time,
         time_type=TimeType.DEPARTURE,
-        max_walking_duration=10,
-        max_transfer_number=1,
+        query_config=QueryConfig(
+            max_walking_duration=10,
+            max_transfer_number=1,
+        ),
         return_connections=True,
     )
 
@@ -105,8 +107,10 @@ def test_get_isolines_invalid_stop(client):
             source=from_stop,
             time=departure_time,
             time_type=TimeType.DEPARTURE,
-            max_walking_duration=10,
-            max_transfer_number=1,
+            query_config=QueryConfig(
+                max_walking_duration=10,
+                max_transfer_number=1,
+            ),
             return_connections=True,
         )
 
