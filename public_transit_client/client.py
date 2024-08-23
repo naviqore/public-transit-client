@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import Any
 
 import requests
 from requests import Response
@@ -14,6 +15,9 @@ from public_transit_client.model import (
     Stop,
     StopConnection,
     TimeType,
+    QueryConfig,
+    ScheduleInfo,
+    RouterInfo,
 )
 
 LOG = logging.getLogger(__name__)
@@ -43,7 +47,7 @@ class PublicTransitClient:
         """
         self.host = host
 
-    def _send_get_request(self, endpoint: str, params: dict[str, str] | None = None):
+    def _send_get_request(self, endpoint: str, params: dict[str, Any] | None = None):
         """Sends a GET request to the API and handles the response."""
         url = f"{self.host}{endpoint}"
         LOG.debug(f"Sending GET request to {url} with params {params}")
@@ -64,8 +68,13 @@ class PublicTransitClient:
                 LOG.error(f"Non-JSON response received: {response.text}")
                 response.raise_for_status()
 
+    def get_schedule_info(self) -> ScheduleInfo:
+        """Retrieve information about the schedule API."""
+        data = self._send_get_request("/schedule")
+        return ScheduleInfo(**data)
+
     def search_stops(
-            self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
+        self, query: str, limit: int = 10, search_type: SearchType = SearchType.CONTAINS
     ) -> list[Stop]:
         """Search for stops by a query string.
 
@@ -77,12 +86,16 @@ class PublicTransitClient:
         Returns:
             list[Stop]: A list of Stop objects that match the query.
         """
-        params = {"query": query, "limit": str(limit), "searchType": search_type.name}
+        params: dict[str, Any] = {
+            "query": query,
+            "limit": str(limit),
+            "searchType": search_type.name,
+        }
         data = self._send_get_request("/schedule/stops/autocomplete", params)
         return [Stop(**stop) for stop in data]
 
     def nearest_stops(
-            self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
+        self, coordinate: Coordinate, limit: int = 10, max_distance: int = 1000
     ) -> list[DistanceToStop]:
         """Find the nearest stops to a given coordinate.
 
@@ -116,11 +129,11 @@ class PublicTransitClient:
         return Stop(**data) if data else None
 
     def get_next_departures(
-            self,
-            stop: str | Stop,
-            departure: datetime | None = None,
-            limit: int = 10,
-            until: datetime | None = None,
+        self,
+        stop: str | Stop,
+        departure: datetime | None = None,
+        limit: int = 10,
+        until: datetime | None = None,
     ) -> list[Departure]:
         """Retrieve the next departures from a specific stop.
 
@@ -143,16 +156,18 @@ class PublicTransitClient:
         data = self._send_get_request(f"/schedule/stops/{stop_id}/departures", params)
         return [Departure(**dep) for dep in data]
 
+    def get_router_info(self) -> RouterInfo:
+        """Retrieve information about the routing API."""
+        data = self._send_get_request("/routing")
+        return RouterInfo(**data)
+
     def get_connections(
-            self,
-            source: Stop | Coordinate | str | tuple[float, float],
-            target: str | Stop | Coordinate | tuple[float, float],
-            time: datetime | None = None,
-            time_type: TimeType = TimeType.DEPARTURE,
-            max_walking_duration: int | None = None,
-            max_transfer_number: int | None = None,
-            max_travel_time: int | None = None,
-            min_transfer_time: int | None = None,
+        self,
+        source: Stop | Coordinate | str | tuple[float, float],
+        target: str | Stop | Coordinate | tuple[float, float],
+        time: datetime | None = None,
+        time_type: TimeType = TimeType.DEPARTURE,
+        query_config: QueryConfig | None = None,
     ) -> list[Connection]:
         """Retrieve a list of possible connections between two stops and or locations.
 
@@ -163,10 +178,7 @@ class PublicTransitClient:
                 Stop ID or Coordinates tuple.
             time (datetime, optional): The time for the connection search. Defaults to None (=now).
             time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
-            max_walking_duration (int, optional): Maximum walking duration in minutes. Defaults to None.
-            max_transfer_number (int, optional): Maximum number of transfers allowed. Defaults to None.
-            max_travel_time (int, optional): Maximum travel time in minutes. Defaults to None.
-            min_transfer_time (int, optional): Minimum transfer time in minutes. Defaults to None.
+            query_config (QueryConfig, optional): Additional query configuration. Defaults to None.
 
         Returns:
             list[Connection]: A list of Connection objects representing the possible routes.
@@ -176,24 +188,18 @@ class PublicTransitClient:
             target,
             time=time,
             time_type=time_type,
-            max_walking_duration=max_walking_duration,
-            max_transfer_number=max_transfer_number,
-            max_travel_time=max_travel_time,
-            min_transfer_time=min_transfer_time,
+            query_config=query_config,
         )
         data = self._send_get_request("/routing/connections", params)
         return [Connection(**conn) for conn in data]
 
     def get_isolines(
-            self,
-            source: Stop | Coordinate | str | tuple[float, float],
-            time: datetime | None = None,
-            time_type: TimeType = TimeType.DEPARTURE,
-            max_walking_duration: int | None = None,
-            max_transfer_number: int | None = None,
-            max_travel_time: int | None = None,
-            min_transfer_time: int | None = None,
-            return_connections: bool = False,
+        self,
+        source: Stop | Coordinate | str | tuple[float, float],
+        time: datetime | None = None,
+        time_type: TimeType = TimeType.DEPARTURE,
+        query_config: QueryConfig | None = None,
+        return_connections: bool = False,
     ) -> list[StopConnection]:
         """Retrieve isolines (areas reachable within a certain time) from a specific stop / location.
 
@@ -202,10 +208,7 @@ class PublicTransitClient:
                 Coordinates tuple.
             time (datetime, optional): The time for the isoline calculation. Defaults to None (=now).
             time_type (TimeType, optional): Whether the time is for departure or arrival. Defaults to DEPARTURE.
-            max_walking_duration (int, optional): Maximum walking duration in minutes. Defaults to None.
-            max_transfer_number (int, optional): Maximum number of transfers allowed. Defaults to None.
-            max_travel_time (int, optional): Maximum travel time in minutes. Defaults to None.
-            min_transfer_time (int, optional): Minimum transfer time in minutes. Defaults to None.
+            query_config (QueryConfig, optional): Additional query configuration. Defaults to None.
             return_connections (bool, optional): Whether to return detailed connections. Defaults to False.
 
         Returns:
@@ -215,10 +218,7 @@ class PublicTransitClient:
             source,
             time=time,
             time_type=time_type,
-            max_walking_duration=max_walking_duration,
-            max_transfer_number=max_transfer_number,
-            max_travel_time=max_travel_time,
-            min_transfer_time=min_transfer_time,
+            query_config=query_config,
         )
 
         if return_connections:
@@ -229,15 +229,12 @@ class PublicTransitClient:
 
     @staticmethod
     def _build_params_dict(
-            source: Stop | Coordinate | str | tuple[float, float],
-            target: str | Stop | Coordinate | tuple[float, float] | None = None,
-            time: datetime | None = None,
-            time_type: TimeType | None = None,
-            max_walking_duration: int | None = None,
-            max_transfer_number: int | None = None,
-            max_travel_time: int | None = None,
-            min_transfer_time: int | None = None,
-    ) -> dict[str, str]:
+        source: Stop | Coordinate | str | tuple[float, float],
+        target: str | Stop | Coordinate | tuple[float, float] | None = None,
+        time: datetime | None = None,
+        time_type: TimeType | None = None,
+        query_config: QueryConfig | None = None,
+    ) -> dict[str, Any]:
 
         if isinstance(source, Stop):
             source = source.id
@@ -249,7 +246,7 @@ class PublicTransitClient:
         elif isinstance(target, Coordinate):
             target = target.to_tuple()
 
-        params: dict[str, str] = {
+        params: dict[str, Any] = {
             "dateTime": (datetime.now() if time is None else time).strftime(
                 "%Y-%m-%dT%H:%M:%S"
             ),
@@ -270,13 +267,23 @@ class PublicTransitClient:
 
         if time_type:
             params["timeType"] = time_type.value
-        if max_walking_duration is not None:
-            params["maxWalkingDuration"] = str(max_walking_duration)
-        if max_transfer_number is not None:
-            params["maxTransferNumber"] = str(max_transfer_number)
-        if max_travel_time is not None:
-            params["maxTravelTime"] = str(max_travel_time)
-        if min_transfer_time is not None:
-            params["minTransferTime"] = str(min_transfer_time)
+
+        if query_config is None:
+            return params
+
+        if query_config.max_walking_duration is not None:
+            params["maxWalkingDuration"] = str(query_config.max_walking_duration)
+        if query_config.max_num_transfers is not None:
+            params["maxTransferNumber"] = str(query_config.max_num_transfers)
+        if query_config.max_travel_time is not None:
+            params["maxTravelTime"] = str(query_config.max_travel_time)
+        if query_config.min_transfer_duration is not None:
+            params["minTransferTime"] = str(query_config.min_transfer_duration)
+        if query_config.accessibility is not None:
+            params["wheelchairAccessible"] = str(query_config.accessibility).lower()
+        if query_config.bikes is not None:
+            params["bikesAllowed"] = str(query_config.bikes).lower()
+        if query_config.travel_modes is not None:
+            params["travelModes"] = [mode.value for mode in query_config.travel_modes]
 
         return params

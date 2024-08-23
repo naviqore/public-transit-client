@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   public-transit-service:
-    image: ghcr.io/naviqore/public-transit-service:v0.4.0
+    image: ghcr.io/naviqore/public-transit-service:v0.5.0
     container_name: public-transit-service
     ports:
       - "8080:8080"

@@ -60,8 +60,8 @@ def test_send_get_request_error(client):
             client._send_get_request("/fake_endpoint")
 
         assert (
-                "API Error 404: The requested stop with ID 'NOT_EXISTING' was not found."
-                in str(exc_info.value)
+            "API Error 404: The requested stop with ID 'NOT_EXISTING' was not found."
+            in str(exc_info.value)
         )
         mock_get.assert_called_once_with("http://fakehost/fake_endpoint", params=None)
 
@@ -158,8 +158,11 @@ def test_get_next_departures(client):
                             "name": "Route 1",
                             "shortName": "R1",
                             "transportMode": "BUS",
+                            "transportModeDescription": "More Bus Details",
                         },
                         "stopTimes": [],
+                        "bikesAllowed": True,
+                        "wheelchairAccessible": True,
                     },
                 }
             ],

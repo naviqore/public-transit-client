@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
 from itertools import pairwise
 
@@ -29,6 +29,18 @@ class TimeType(Enum):
     ARRIVAL = "ARRIVAL"
 
 
+class TransportMode(Enum):
+    """Enum for specifying the mode of transport."""
+
+    BUS = "BUS"
+    TRAM = "TRAM"
+    RAIL = "RAIL"
+    SHIP = "SHIP"
+    SUBWAY = "SUBWAY"
+    AERIAL_LIFT = "AERIAL_LIFT"
+    FUNICULAR = "FUNICULAR"
+
+
 class APIError(BaseModel):
     """Model representing an API error.
 
@@ -45,6 +57,89 @@ class APIError(BaseModel):
     error: str
     path: str
     message: str
+
+
+class ScheduleValidity(BaseModel):
+    """Model representing the validity of a schedule.
+
+    Attributes:
+        start_date (date): The start date of the schedule.
+        end_date (date): The end date of the schedule.
+    """
+
+    start_date: date = Field(alias="startDate")
+    end_date: date = Field(alias="endDate")
+
+    def is_date_valid(self, reference_date: date) -> bool:
+        """Check if a date is within the validity range.
+
+        Args:
+            reference_date (date): The date to check.
+
+        Returns:
+            bool: True if the date is within the range, False otherwise.
+        """
+        return self.start_date <= reference_date <= self.end_date
+
+
+class ScheduleInfo(BaseModel):
+    """Model representing schedule information.
+
+    Attributes:
+        has_accessibility (bool): Indicates if the schedule has accessibility information.
+        has_bikes (bool): Indicates if the schedule has bike information.
+        has_travel_modes (bool): Indicates if the schedule has travel mode information.
+        schedule_validity (ScheduleValidity): The validity of the schedule.
+    """
+
+    has_accessibility: bool = Field(alias="hasAccessibility")
+    has_bikes: bool = Field(alias="hasBikes")
+    has_travel_modes: bool = Field(alias="hasTravelModes")
+    schedule_validity: ScheduleValidity = Field(alias="scheduleValidity")
+
+
+class RouterInfo(BaseModel):
+    """Model representing information about the router.
+
+    Attributes:
+        supports_max_num_transfers (bool): Indicates if the router supports maximum number of transfers.
+        supports_max_travel_time (bool): Indicates if the router supports maximum travel time.
+        supports_max_walking_duration (bool): Indicates if the router supports maximum walking duration.
+        supports_min_transfer_duration (bool): Indicates if the router supports minimum transfer duration.
+        supports_accessibility (bool): Indicates if the router supports accessibility.
+        supports_bikes (bool): Indicates if the router supports bikes.
+        supports_travel_modes (bool): Indicates if the router supports travel modes.
+    """
+
+    supports_max_num_transfers: bool = Field(alias="supportsMaxNumTransfers")
+    supports_max_travel_time: bool = Field(alias="supportsMaxTravelTime")
+    supports_max_walking_duration: bool = Field(alias="supportsMaxWalkingDuration")
+    supports_min_transfer_duration: bool = Field(alias="supportsMinTransferDuration")
+    supports_accessibility: bool = Field(alias="supportsAccessibility")
+    supports_bikes: bool = Field(alias="supportsBikes")
+    supports_travel_modes: bool = Field(alias="supportsTravelModes")
+
+
+class QueryConfig(BaseModel):
+    """Model representing configuration for a query.
+
+    Attributes:
+        max_num_transfers (int | None): The maximum number of transfers allowed.
+        max_travel_time (int | None): The maximum travel time allowed.
+        max_walking_duration (int | None): The maximum walking duration allowed.
+        min_transfer_duration (int | None): The minimum transfer duration allowed.
+        accessibility (bool | None): Indicates if accessibility is required.
+        bikes (bool | None): Indicates if bikes are allowed.
+        travel_modes (list[TransportMode] | None): A list of allowed travel modes.
+    """
+
+    max_num_transfers: int | None = None
+    max_travel_time: int | None = None
+    max_walking_duration: int | None = None
+    min_transfer_duration: int | None = None
+    accessibility: bool | None = None
+    bikes: bool | None = None
+    travel_modes: list[TransportMode] | None = None
 
 
 class Coordinate(BaseModel):
@@ -104,13 +199,15 @@ class Route(BaseModel):
         id (str): The unique identifier of the route.
         name (str): The name of the route.
         short_name (str): The short name of the route.
-        transport_mode (str): The mode of transport (e.g., bus, train).
+        transport_mode (TransportMode): The mode of transport (e.g., BUS, TRAIN).
+        transport_mode_description (str): A more detailed description of the transport mode.
     """
 
     id: str
     name: str
     short_name: str = Field(alias="shortName")
-    transport_mode: str = Field(alias="transportMode")
+    transport_mode: TransportMode = Field(alias="transportMode")
+    transport_mode_description: str = Field(alias="transportModeDescription")
 
 
 class StopTime(BaseModel):
@@ -134,11 +231,15 @@ class Trip(BaseModel):
         head_sign (str): The head sign of the trip.
         route (Route): The route associated with the trip.
         stop_times (list[StopTime]): A list of stop times for the trip.
+        bikes_allowed (bool): Indicates if bikes are allowed on the trip.
+        wheelchair_accessible (bool): Indicates if the trip is wheelchair accessible.
     """
 
     head_sign: str = Field(alias="headSign")
     route: Route
     stop_times: list[StopTime] = Field(alias="stopTimes")
+    bikes_allowed: bool = Field(alias="bikesAllowed")
+    wheelchair_accessible: bool = Field(alias="wheelchairAccessible")
 
     @field_validator("stop_times", mode="before")
     def _set_stop_times_not_none(cls, v: list[StopTime] | None) -> list[StopTime]:
@@ -390,7 +491,7 @@ class Connection(BaseModel):
     def travel_duration(self) -> int:
         """Calculate the travel duration of the connection in seconds.
 
-        The travel duration is the sum of the duration of all legs, exluding any waiting time.
+        The travel duration is the sum of the duration of all legs, excluding any waiting time.
 
         Returns:
             int: The travel duration in seconds.
