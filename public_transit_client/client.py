@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import Any
 
 import requests
 from requests import Response
@@ -46,9 +47,7 @@ class PublicTransitClient:
         """
         self.host = host
 
-    def _send_get_request(
-        self, endpoint: str, params: dict[str, str | list[str]] | None = None
-    ):
+    def _send_get_request(self, endpoint: str, params: dict[str, Any] | None = None):
         """Sends a GET request to the API and handles the response."""
         url = f"{self.host}{endpoint}"
         LOG.debug(f"Sending GET request to {url} with params {params}")
@@ -87,7 +86,11 @@ class PublicTransitClient:
         Returns:
             list[Stop]: A list of Stop objects that match the query.
         """
-        params = {"query": query, "limit": str(limit), "searchType": search_type.name}
+        params: dict[str, Any] = {
+            "query": query,
+            "limit": str(limit),
+            "searchType": search_type.name,
+        }
         data = self._send_get_request("/schedule/stops/autocomplete", params)
         return [Stop(**stop) for stop in data]
 
@@ -231,7 +234,7 @@ class PublicTransitClient:
         time: datetime | None = None,
         time_type: TimeType | None = None,
         query_config: QueryConfig | None = None,
-    ) -> dict[str, str | list[str]]:
+    ) -> dict[str, Any]:
 
         if isinstance(source, Stop):
             source = source.id
@@ -243,7 +246,7 @@ class PublicTransitClient:
         elif isinstance(target, Coordinate):
             target = target.to_tuple()
 
-        params: dict[str, str | list[str]] = {
+        params: dict[str, Any] = {
             "dateTime": (datetime.now() if time is None else time).strftime(
                 "%Y-%m-%dT%H:%M:%S"
             ),
