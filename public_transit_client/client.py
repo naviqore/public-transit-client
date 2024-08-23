@@ -71,7 +71,7 @@ class PublicTransitClient:
 
     def get_schedule_info(self) -> ScheduleInfo:
         """Retrieve information about the schedule API."""
-        data = self._send_get_request("/schedule/")
+        data = self._send_get_request("/schedule")
         return ScheduleInfo(**data)
 
     def search_stops(
@@ -155,7 +155,7 @@ class PublicTransitClient:
 
     def get_router_info(self) -> RouterInfo:
         """Retrieve information about the routing API."""
-        data = self._send_get_request("/routing/")
+        data = self._send_get_request("/routing")
         return RouterInfo(**data)
 
     def get_connections(
