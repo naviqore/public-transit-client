@@ -12,6 +12,9 @@ license = "MIT"
 homepage = "https://pypi.org/project/public-transit-client/"
 documentation = "https://naviqore.github.io/documentation/introduction.html"
 repository = "https://github.com/naviqore/public-transit-client"
+include = [
+    "public_transit_client/py.typed"
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
