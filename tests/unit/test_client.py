@@ -158,8 +158,11 @@ def test_get_next_departures(client):
                             "name": "Route 1",
                             "shortName": "R1",
                             "transportMode": "BUS",
+                            "transportModeDescription": "More Bus Details",
                         },
                         "stopTimes": [],
+                        "bikesAllowed": True,
+                        "wheelchairAccessible": True,
                     },
                 }
             ],
