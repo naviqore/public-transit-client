@@ -199,7 +199,8 @@ class Route(BaseModel):
         id (str): The unique identifier of the route.
         name (str): The name of the route.
         short_name (str): The short name of the route.
-        transport_mode (str): The mode of transport (e.g., bus, train).
+        transport_mode (TransportMode): The mode of transport (e.g., BUS, TRAIN).
+        transport_mode_description (str): A more detailed description of the transport mode.
     """
 
     id: str
@@ -230,6 +231,8 @@ class Trip(BaseModel):
         head_sign (str): The head sign of the trip.
         route (Route): The route associated with the trip.
         stop_times (list[StopTime]): A list of stop times for the trip.
+        bikes_allowed (bool): Indicates if bikes are allowed on the trip.
+        wheelchair_accessible (bool): Indicates if the trip is wheelchair accessible.
     """
 
     head_sign: str = Field(alias="headSign")
