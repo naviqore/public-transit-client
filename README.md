@@ -61,6 +61,14 @@ Once the services are up and running, execute the integration tests with:
 poetry run pytest -m integration
 ```
 
+### Coverage
+
+To analyze the test coverage run:
+
+```sh
+poetry run pytest --cov=public_transit_client
+```
+
 ## License
 
 This project is licensed under the MIT License - see
