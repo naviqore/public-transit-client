@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   public-transit-service:
     image: ghcr.io/naviqore/public-transit-service:v1.0.0
