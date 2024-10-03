@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import date, datetime
 
 import pytest
 
@@ -9,12 +9,12 @@ from public_transit_client.client import (
 from public_transit_client.model import (
     Connection,
     Coordinate,
-    StopConnection,
-    TimeType,
     QueryConfig,
-    TransportMode,
     RouterInfo,
     ScheduleInfo,
+    StopConnection,
+    TimeType,
+    TransportMode,
 )
 
 HOST = "http://localhost:8080"
@@ -68,6 +68,42 @@ def test_get_connections(client):
     assert all(isinstance(connection, Connection) for connection in connections)
     assert connections[0].from_stop.id == from_stop
     assert connections[0].to_stop.id == to_stop
+
+
+@pytest.mark.integration
+def test_get_connections_coordinates(client):
+    from_coordinate = Coordinate(latitude=36.914, longitude=-116.761)
+    to_coordinate = Coordinate(latitude=36.881, longitude=-116.817)
+    departure_time = datetime(2008, 6, 1)
+    connections = client.get_connections(
+        source=from_coordinate,
+        target=to_coordinate,
+        time=departure_time,
+        time_type=TimeType.DEPARTURE,
+    )
+
+    assert isinstance(connections, list)
+    assert len(connections) > 0
+    assert all(isinstance(connection, Connection) for connection in connections)
+    assert connections[0].from_coordinate == from_coordinate
+    assert connections[0].to_coordinate == to_coordinate
+
+
+@pytest.mark.integration
+def test_get_connections_coordinate_tuples(client):
+    from_coordinate = (36.914, -116.761)
+    to_coordinate = (36.881, -116.817)
+    departure_time = datetime(2008, 6, 1)
+    connections = client.get_connections(
+        source=from_coordinate,
+        target=to_coordinate,
+        time=departure_time,
+        time_type=TimeType.DEPARTURE,
+    )
+
+    assert isinstance(connections, list)
+    assert len(connections) > 0
+    assert all(isinstance(connection, Connection) for connection in connections)
 
 
 @pytest.mark.integration
