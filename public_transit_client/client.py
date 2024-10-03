@@ -11,13 +11,13 @@ from public_transit_client.model import (
     Coordinate,
     Departure,
     DistanceToStop,
+    QueryConfig,
+    RouterInfo,
+    ScheduleInfo,
     SearchType,
     Stop,
     StopConnection,
     TimeType,
-    QueryConfig,
-    ScheduleInfo,
-    RouterInfo,
 )
 
 LOG = logging.getLogger(__name__)
@@ -252,14 +252,14 @@ class PublicTransitClient:
             ),
         }
 
-        if source is isinstance(source, tuple):
+        if isinstance(source, tuple):
             params["sourceLatitude"] = str(source[0])
             params["sourceLongitude"] = str(source[1])
         elif isinstance(source, str):
             params["sourceStopId"] = source
 
         if target is not None:
-            if target is isinstance(target, tuple):
+            if isinstance(target, tuple):
                 params["targetLatitude"] = str(target[0])
                 params["targetLongitude"] = str(target[1])
             elif isinstance(target, str):
