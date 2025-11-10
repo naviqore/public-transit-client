@@ -23,7 +23,7 @@ pydantic = "^2.8.2"
 geopy = "^2.4.1"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.2"
+pytest = ">=8.3.2,<10.0.0"
 mypy = "^1.11.1"
 black = ">=24.8,<26.0"
 isort = ">=5.13.2,<7.0.0"
